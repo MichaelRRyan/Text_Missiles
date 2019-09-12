@@ -3,17 +3,47 @@
 
 #include <iostream>
 
+// Structs
+struct Enemy
+{
+	int x, y;
+	int attackCooldown;
+	bool active;
+};
+
+// Variables
+const int ENEMY_ATTACK_TIME{ 5 };
+const unsigned NUM_ENEMIES{ 5 };
+
+Enemy enemies[NUM_ENEMIES];
+
+// Function declarations
 void start();
 void backstory();
+void shipControl();
+void scan();
+void launchMissile();
 
-int main() {
+// Function definitions
+int main()
+{
+	srand(static_cast<unsigned>(time_t(NULL)));
+
+	for (int i = 0; i < NUM_ENEMIES; i++)
+	{
+		enemies[i].active = true;
+		enemies[i].attackCooldown = rand() % ENEMY_ATTACK_TIME + 1;
+		enemies[i].x = rand() % 20;
+		enemies[i].y = rand() % 20;
+	}
 
 	start();
 
 	return 0;
 }
 
-void start() {
+void start()
+{
 	std::cout
 		<< "\t _____ _____ __ __ _____    _____ _____ _____ _____ _____ __    _____ \n"
 		<< "\t|_   _|   __|  |  |_   _|  |     |     |   __|   __|     |  |  |   __|\n"
@@ -25,10 +55,97 @@ void start() {
 	backstory();
 }
 
-void backstory() {
+void backstory()
+{
 	system("cls");
 	std::cout << "You are the captain of the SS Bourke.\n\nOn a routine supply trip to an offshore military base, your ship was suddenly attacked, and seemingly surrounded.\n"
-		<< "Your ship, while mainly a cargo ship, is equiped with a single, slow firing, mounted missile launcher. You are vastly\noutnumbered, but with quick thinking, and"
+		<< "Your ship, while mainly a cargo ship, is equiped with a single, slow firing, mounted missile launcher. You are vastly\noutnumbered, but with quick thinking, and "
 		<< "precise aim you think you can take down the attackers...\n\n";
+	system("pause");
+
+	shipControl();
+}
+
+void shipControl()
+{
+	int command = 10;
+
+	while (command != 0)
+	{
+		system("cls");
+		std::cout << "Enter a number coresponding to a command:\n= 0 = exit program\n= 1 = Scan for enemy ships\n= 2 = Choose Missile Type\n= 3 = Launch Missile\n"
+			<< "-----------------------------------------------" << std::endl;
+
+		std::cin >> command;
+
+		switch (command)
+		{
+		case 1: // Scan for enemies
+			scan();
+			break;
+		case 3:
+			launchMissile();
+			break;
+		default:
+			break;
+		}
+	}
+
+	system("cls");
+	std::cout << "Shutting Down..." << std::endl;
+	
+	system("pause");
+}
+
+void scan()
+{
+	system("cls");
+	for (int i = 0; i < NUM_ENEMIES; i++)
+	{
+		if (enemies[i].active)
+		{
+			std::cout << "Enemy scanned at " << enemies[i].x << ", " << enemies[i].y << std::endl;
+		}
+	}
+	system("pause");
+}
+
+void launchMissile()
+{
+	// Set up variables
+	bool targetHit = false;
+	int x, y;
+
+	// Get input
+	std::cout << "Enter coordinates (x and y separated by a space): ";
+	std::cin >> x >> y;
+	
+	// Check coordinates are within range
+	if (x < 20 && y < 20 && x >= 0 && y >= 0)
+	{
+		// Loop the enemies
+		for (int i = 0; i < NUM_ENEMIES; i++)
+		{
+			// Check if the coordinates match and the enemy is active
+			if (enemies[i].x == x && enemies[i].y == y && enemies[i].active)
+			{
+				std::cout << "Target hit at " << x << ", " << y << std::endl;
+				enemies[i].active = false;
+				targetHit = true;
+				break;
+			}
+		}
+
+		// Check if target was hit, display message if not
+		if (!targetHit)
+		{
+			std::cout << "MISS: No target spotted at " << x << ", " << y << std::endl;
+		}
+	}
+	else // Display message if coordinates out of range
+	{
+		std::cout << "ERROR: Coordinates out of range." << std::endl;
+	}
+
 	system("pause");
 }
