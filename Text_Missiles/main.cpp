@@ -2,6 +2,9 @@
 /// @Date 11/09/2019
 
 #include <iostream>
+#include <time.h>
+#include <Windows.h>
+#include "string"
 
 // Structs
 struct Enemy
@@ -16,6 +19,10 @@ const int ENEMY_ATTACK_TIME{ 5 };
 const unsigned NUM_ENEMIES{ 5 };
 
 Enemy enemies[NUM_ENEMIES];
+int health = 10;
+int enemiesAlive = NUM_ENEMIES;
+
+HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
 // Function declarations
 void start();
@@ -23,11 +30,13 @@ void backstory();
 void shipControl();
 void scan();
 void launchMissile();
+void enemyAttack();
+void typewrite(std::string t_string);
 
 // Function definitions
 int main()
 {
-	srand(static_cast<unsigned>(time_t(NULL)));
+	srand(static_cast<unsigned>(time(nullptr)));
 
 	for (int i = 0; i < NUM_ENEMIES; i++)
 	{
@@ -38,6 +47,9 @@ int main()
 	}
 
 	start();
+
+	//typewrite("Hello there, General Kenobi");
+	system("pause");
 
 	return 0;
 }
@@ -89,6 +101,18 @@ void shipControl()
 		default:
 			break;
 		}
+
+		if (command > 0)
+		{
+			enemyAttack();
+		}
+
+		if (health <= 0)
+		{
+			std::cout << std::endl << "Your ship is going down...\nThere is no escape..." << std::endl;
+			command = 0;
+			system("pause");
+		}
 	}
 
 	system("cls");
@@ -132,6 +156,7 @@ void launchMissile()
 				std::cout << "Target hit at " << x << ", " << y << std::endl;
 				enemies[i].active = false;
 				targetHit = true;
+				enemiesAlive--;
 				break;
 			}
 		}
@@ -144,8 +169,58 @@ void launchMissile()
 	}
 	else // Display message if coordinates out of range
 	{
-		std::cout << "ERROR: Coordinates out of range." << std::endl;
+		typewrite("ERROR: Coordinates out of range.\n");
 	}
 
 	system("pause");
+}
+
+void enemyAttack()
+{
+	typewrite("\nScanning for enemy action...\n");
+
+	if (enemiesAlive <= 0)
+	{
+		std::cout << "No enemies alive" << std::endl;
+	}
+	else
+	{
+		for (int i = 0; i < NUM_ENEMIES; i++)
+		{
+			if (enemies[i].active)
+			{
+				typewrite("\nMissile Fired!\n");
+
+				if (rand() % NUM_ENEMIES == 0)
+				{
+					health--;
+					if (health < 0)
+					{
+						health = 0;
+					}
+					SetConsoleTextAttribute(hConsole, 4);
+					typewrite("Ship hit!\n");
+					SetConsoleTextAttribute(hConsole, 15);
+					typewrite("Ship Health: " + std::to_string(health) + "\n");
+				}
+				else
+				{
+					std::cout << "It missed!" << std::endl;
+				}
+			}
+		}
+	}
+
+	system("pause");
+}
+
+void typewrite(std::string t_string)
+{
+	int len = t_string.length();
+	for (int i = 0; i < len; i++)
+	{
+		std::cout << t_string[i];
+		Sleep(50);
+		//Beep(850, 300);
+	}
 }
