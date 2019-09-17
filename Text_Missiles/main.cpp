@@ -21,6 +21,7 @@ const unsigned NUM_ENEMIES{ 5 };
 Enemy enemies[NUM_ENEMIES];
 int health = 10;
 int enemiesAlive = NUM_ENEMIES;
+int command = 10;
 
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
@@ -70,9 +71,9 @@ void start()
 void backstory()
 {
 	system("cls");
-	std::cout << "You are the captain of the SS Bourke.\n\nOn a routine supply trip to an offshore military base, your ship was suddenly attacked, and seemingly surrounded.\n"
-		<< "Your ship, while mainly a cargo ship, is equiped with a single, slow firing, mounted missile launcher. You are vastly\noutnumbered, but with quick thinking, and "
-		<< "precise aim you think you can take down the attackers...\n\n";
+	typewrite("You are the captain of the SS Bourke.\n\nOn a routine supply trip to an offshore military base, your ship was suddenly attacked, and seemingly surrounded.\n");
+	typewrite("Your ship, while mainly a cargo ship, is equiped with a single, slow firing, mounted missile launcher. You are vastly\noutnumbered, but with quick thinking, and ");
+	typewrite("precise aim you think you can take down the attackers...\n\n");
 	system("pause");
 
 	shipControl();
@@ -80,13 +81,11 @@ void backstory()
 
 void shipControl()
 {
-	int command = 10;
-
 	while (command != 0)
 	{
 		system("cls");
-		std::cout << "Enter a number coresponding to a command:\n= 0 = exit program\n= 1 = Scan for enemy ships\n= 2 = Choose Missile Type\n= 3 = Launch Missile\n"
-			<< "-----------------------------------------------" << std::endl;
+		typewrite("Enter a number coresponding to a command:\n= 0 = exit program\n= 1 = Scan for enemy ships\n= 2 = Choose Missile Type\n= 3 = Launch Missile\n");
+		typewrite("-----------------------------------------------\n");
 
 		std::cin >> command;
 
@@ -109,14 +108,14 @@ void shipControl()
 
 		if (health <= 0)
 		{
-			std::cout << std::endl << "Your ship is going down...\nThere is no escape..." << std::endl;
+			typewrite("\nYour ship is going down...\nThere is no escape...\n");
 			command = 0;
 			system("pause");
 		}
 	}
 
 	system("cls");
-	std::cout << "Shutting Down..." << std::endl;
+	typewrite("Shutting Down...\n");
 	
 	system("pause");
 }
@@ -128,7 +127,7 @@ void scan()
 	{
 		if (enemies[i].active)
 		{
-			std::cout << "Enemy scanned at " << enemies[i].x << ", " << enemies[i].y << std::endl;
+			typewrite("Enemy scanned at " + std::to_string(enemies[i].x) + ", " + std::to_string(enemies[i].y) + "\n");
 		}
 	}
 	system("pause");
@@ -141,7 +140,7 @@ void launchMissile()
 	int x, y;
 
 	// Get input
-	std::cout << "Enter coordinates (x and y separated by a space): ";
+	typewrite("Enter coordinates (x and y separated by a space): ");
 	std::cin >> x >> y;
 	
 	// Check coordinates are within range
@@ -153,7 +152,7 @@ void launchMissile()
 			// Check if the coordinates match and the enemy is active
 			if (enemies[i].x == x && enemies[i].y == y && enemies[i].active)
 			{
-				std::cout << "Target hit at " << x << ", " << y << std::endl;
+				typewrite("Target hit at " + std::to_string(x) + ", " + std::to_string(y) + "\n");
 				enemies[i].active = false;
 				targetHit = true;
 				enemiesAlive--;
@@ -164,7 +163,7 @@ void launchMissile()
 		// Check if target was hit, display message if not
 		if (!targetHit)
 		{
-			std::cout << "MISS: No target spotted at " << x << ", " << y << std::endl;
+			typewrite("MISS: No target spotted at " + std::to_string(x) + ", " + std::to_string(y) + "\n");
 		}
 	}
 	else // Display message if coordinates out of range
@@ -181,7 +180,9 @@ void enemyAttack()
 
 	if (enemiesAlive <= 0)
 	{
-		std::cout << "No enemies alive" << std::endl;
+		typewrite("No enemies alive\n");
+		typewrite("We made it out alive! Good job, Captain!\n");
+		command = 0;
 	}
 	else
 	{
@@ -205,7 +206,7 @@ void enemyAttack()
 				}
 				else
 				{
-					std::cout << "It missed!" << std::endl;
+					typewrite("It missed!\n");
 				}
 			}
 		}
@@ -220,7 +221,7 @@ void typewrite(std::string t_string)
 	for (int i = 0; i < len; i++)
 	{
 		std::cout << t_string[i];
-		Sleep(50);
+		Sleep(2);
 		//Beep(850, 300);
 	}
 }
