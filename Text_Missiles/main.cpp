@@ -16,7 +16,7 @@ struct Enemy
 
 // Variables
 const int ENEMY_ATTACK_TIME{ 5 };
-const unsigned NUM_ENEMIES{ 5 };
+const unsigned NUM_ENEMIES{ 1 };
 
 Enemy enemies[NUM_ENEMIES];
 int health = 10;
@@ -33,6 +33,7 @@ void scan();
 void launchMissile();
 void enemyAttack();
 void typewrite(std::string t_string);
+void dotDelay(int t_delay);
 
 // Function definitions
 int main()
@@ -48,9 +49,6 @@ int main()
 	}
 
 	start();
-
-	//typewrite("Hello there, General Kenobi");
-	system("pause");
 
 	return 0;
 }
@@ -73,7 +71,9 @@ void backstory()
 	system("cls");
 	typewrite("You are the captain of the SS Bourke.\n\nOn a routine supply trip to an offshore military base, your ship was suddenly attacked, and seemingly surrounded.\n");
 	typewrite("Your ship, while mainly a cargo ship, is equiped with a single, slow firing, mounted missile launcher. You are vastly\noutnumbered, but with quick thinking, and ");
-	typewrite("precise aim you think you can take down the attackers...\n\n");
+	typewrite("precise aim you think you can take down the attackers");
+	dotDelay(400);
+	std::cout << "\n\n";
 	system("pause");
 
 	shipControl();
@@ -108,16 +108,20 @@ void shipControl()
 
 		if (health <= 0)
 		{
-			typewrite("\nYour ship is going down...\nThere is no escape...\n");
+			typewrite("\nYour ship is going down");
+			dotDelay(400);
+			typewrite("\nThere is no escape");
+			dotDelay(400);
+			std::cout << "\n";
 			command = 0;
 			system("pause");
 		}
 	}
 
 	system("cls");
-	typewrite("Shutting Down...\n");
-	
-	system("pause");
+	typewrite("Shutting Down");
+	dotDelay(600);
+	Sleep(200);
 }
 
 void scan()
@@ -176,12 +180,16 @@ void launchMissile()
 
 void enemyAttack()
 {
-	typewrite("\nScanning for enemy action...\n");
+	typewrite("\nScanning for enemy action");
+	dotDelay(400);
+	std::cout << "\n";
 
 	if (enemiesAlive <= 0)
 	{
 		typewrite("No enemies alive\n");
-		typewrite("We made it out alive! Good job, Captain!\n");
+		SetConsoleTextAttribute(hConsole, 6);
+		typewrite("\nWe made it out alive! Good job, Captain!\n\n");
+		SetConsoleTextAttribute(hConsole, 15);
 		command = 0;
 	}
 	else
@@ -222,6 +230,15 @@ void typewrite(std::string t_string)
 	{
 		std::cout << t_string[i];
 		Sleep(2);
-		//Beep(850, 300);
 	}
+}
+
+void dotDelay(int t_delay)
+{
+	for (int i = 0; i < 3; i++)
+	{
+		Sleep(t_delay);
+		std::cout << ".";
+	}
+	Sleep(t_delay);
 }
