@@ -10,13 +10,11 @@
 struct Enemy
 {
 	int x, y;
-	int attackCooldown;
 	bool active;
 };
 
 // Variables
-const int ENEMY_ATTACK_TIME{ 5 };
-const unsigned NUM_ENEMIES{ 1 };
+const unsigned NUM_ENEMIES{ 8 };
 
 Enemy enemies[NUM_ENEMIES];
 int health = 10;
@@ -43,7 +41,6 @@ int main()
 	for (int i = 0; i < NUM_ENEMIES; i++)
 	{
 		enemies[i].active = true;
-		enemies[i].attackCooldown = rand() % ENEMY_ATTACK_TIME + 1;
 		enemies[i].x = rand() % 20;
 		enemies[i].y = rand() % 20;
 	}
