@@ -1,16 +1,56 @@
 /// @Author Michael Rainsford Ryan
 /// @Date 11/09/2019
+/// Approx Time Taken: 4h
 
 #include <iostream>
 #include <time.h>
 #include <Windows.h>
 #include "string"
 
-// Structs
-struct Enemy
+typedef struct Position
 {
-	int x, y;
+	int x;
+	int y;
+
+	std::string getString()
+	{
+		return std::to_string(x) + ", " + std::to_string(y);
+	}
+} Coordinates;
+
+enum WarHead
+{
+	Explosive,
+	Nuclear,
+};
+
+// Structs
+typedef struct Enemy
+{
+	Coordinates coordinates;
 	bool active;
+} Target;
+
+struct Missile
+{
+	WarHead payload;
+
+	Coordinates coordinates;
+
+	Target target;
+
+	bool armed;
+
+	void arm()
+	{
+		armed = !armed;
+	}
+
+	void update()
+	{
+		coordinates.x += 1;
+		coordinates.y += 2;
+	}
 };
 
 // Variables
@@ -28,6 +68,7 @@ void start();
 void backstory();
 void shipControl();
 void scan();
+void chooseWarHead();
 void launchMissile();
 void enemyAttack();
 void typewrite(std::string t_string);
@@ -41,8 +82,8 @@ int main()
 	for (int i = 0; i < NUM_ENEMIES; i++)
 	{
 		enemies[i].active = true;
-		enemies[i].x = rand() % 20;
-		enemies[i].y = rand() % 20;
+		enemies[i].coordinates.x = rand() % 20;
+		enemies[i].coordinates.y = rand() % 20;
 	}
 
 	start();
@@ -81,7 +122,7 @@ void shipControl()
 	while (command != 0)
 	{
 		system("cls");
-		typewrite("Enter a number coresponding to a command:\n= 0 = exit program\n= 1 = Scan for enemy ships\n= 2 = Choose Missile Type\n= 3 = Launch Missile\n");
+		typewrite("Enter a number coresponding to a command:\n= 0 = exit program\n= 1 = Scan for enemy ships\n= 2 = Launch Missile\n= 3 = Choose Missile Type\n");
 		typewrite("-----------------------------------------------\n");
 
 		std::cin >> command;
@@ -91,14 +132,17 @@ void shipControl()
 		case 1: // Scan for enemies
 			scan();
 			break;
-		case 3:
+		case 2:
 			launchMissile();
+			break;
+		case 3:
+			chooseWarHead();
 			break;
 		default:
 			break;
 		}
 
-		if (command > 0)
+		if (command > 0 && command < 3)
 		{
 			enemyAttack();
 		}
@@ -128,32 +172,62 @@ void scan()
 	{
 		if (enemies[i].active)
 		{
-			typewrite("Enemy scanned at " + std::to_string(enemies[i].x) + ", " + std::to_string(enemies[i].y) + "\n");
+			typewrite("Enemy scanned at " + enemies[i].coordinates.getString() + "\n");
 		}
 	}
 	system("pause");
+}
+
+void chooseWarHead()
+{
+	system("cls");
+
+	typewrite("Enter a number coresponding to a war head:\n= 0 = Exit war head selection\n= 1 = Explosive (Unlimited)\n= 2 = Nuclear (4 left)\n");
+	typewrite("-----------------------------------------------\n");
+
+	int missileType;
+
+	std::cin >> missileType;
+
+	switch (missileType)
+	{
+	case 0:
+		break;
+	case 1: // Scan for enemies
+		typewrite("Explosive missile selected\n");
+		dotDelay(400);
+		break;
+	case 2:
+		typewrite("Nuclear missile selected\n");
+		dotDelay(400);
+		break;
+	default:
+		typewrite("Unrecognised value entered, default missile selected: Explosive\n");
+		dotDelay(400);
+		break;
+	}
 }
 
 void launchMissile()
 {
 	// Set up variables
 	bool targetHit = false;
-	int x, y;
+	Coordinates targetCoords;
 
 	// Get input
 	typewrite("Enter coordinates (x and y separated by a space): ");
-	std::cin >> x >> y;
+	std::cin >> targetCoords.x >> targetCoords.y;
 	
 	// Check coordinates are within range
-	if (x < 20 && y < 20 && x >= 0 && y >= 0)
+	if (targetCoords.x < 20 && targetCoords.y < 20 && targetCoords.x >= 0 && targetCoords.y >= 0)
 	{
 		// Loop the enemies
 		for (int i = 0; i < NUM_ENEMIES; i++)
 		{
 			// Check if the coordinates match and the enemy is active
-			if (enemies[i].x == x && enemies[i].y == y && enemies[i].active)
+			if (enemies[i].coordinates.x == targetCoords.x && enemies[i].coordinates.y == targetCoords.y && enemies[i].active)
 			{
-				typewrite("Target hit at " + std::to_string(x) + ", " + std::to_string(y) + "\n");
+				typewrite("Target hit at " + enemies[i].coordinates.getString() + "\n");
 				enemies[i].active = false;
 				targetHit = true;
 				enemiesAlive--;
@@ -164,7 +238,7 @@ void launchMissile()
 		// Check if target was hit, display message if not
 		if (!targetHit)
 		{
-			typewrite("MISS: No target spotted at " + std::to_string(x) + ", " + std::to_string(y) + "\n");
+			typewrite("MISS: No target spotted at " + std::to_string(targetCoords.x) + ", " + std::to_string(targetCoords.y) + "\n");
 		}
 	}
 	else // Display message if coordinates out of range
