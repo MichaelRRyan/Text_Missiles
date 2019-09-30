@@ -183,6 +183,10 @@ void backstory()
 	typewrite("precise aim you think you can take down the attackers");
 	dotDelay(400);
 	std::cout << "\n\n";
+	SetConsoleTextAttribute(hConsole, 9);
+	typewrite("Some actions (Scan and Launch Missile) take time, giving the enemy the chance to attack, be cautious of this");
+	dotDelay(400);
+	std::cout << "\n\n";
 	SetConsoleTextAttribute(hConsole, 15);
 	system("pause");
 
@@ -335,8 +339,8 @@ void chooseWarHead()
 void launchMissile()
 {
 	// Set up variables
-	bool targetFound = false;
-	Coordinates targetCoords;
+	bool targetFound = false; // Whether or not the input matches an enemy
+	Coordinates targetCoords; // Variable for input
 
 	// Get input
 	typewrite("Enter coordinates (x and y separated by a space): ");
@@ -351,37 +355,40 @@ void launchMissile()
 			// Check if the coordinates match and the enemy is active
 			if (enemies[i].active && enemies[i].coordinates == targetCoords)
 			{
-				targetFound = true;
+				targetFound = true; // Target is found
 
-				int launchCode;
+				int launchCode; // Input variable for launch code
+
+				// Get launch code input
 				typewrite("Enter launch code: ");
 				std::cin >> launchCode;
 
+				// Check if the launch code is correct
 				if (LAUNCH_CODE == launchCode)
 				{
-					missile.target = enemies[i];
-					missile.coordinates = player.coordinates;
-					missile.arm();
-					typewrite("Target at " + enemies[i].coordinates.getString() + " locked. Firing missile\n");
-					dotDelay(400);
+					missile.target = enemies[i]; // Set the enemy as the target
+					missile.coordinates = player.coordinates; // Set the coordinates to the player location
+					missile.arm(); // Arm the missile
+					typewrite("Target at " + enemies[i].coordinates.getString() + " locked. Firing missile\n"); // Type that the missile is locked
+					dotDelay(400); // Delay with dot display
 
-					updateLaunchedMissile();
+					updateLaunchedMissile(); // Update the launched missile (loops until missile hits)
 				}
-				else
+				else // If the launch code is incorrect
 				{
-					typewrite("Code incorrect. Aborting missile launch");
-					dotDelay(200);
-					std::cout << std::endl;
+					typewrite("Code incorrect. Aborting missile launch"); // Type the error message
+					dotDelay(200); // Delay with dot display
+					std::cout << std::endl; // break to new line
 				}
 				
-				break;
+				break; // Break from loop when an enemy is found
 			}
 		}
 
 		// Display a message if no target was found
 		if (!targetFound)
 		{
-			typewrite("MISS: No target spotted at " + std::to_string(targetCoords.x) + ", " + std::to_string(targetCoords.y) + "\n");
+			typewrite("ERROR: No target spotted at " + std::to_string(targetCoords.x) + ", " + std::to_string(targetCoords.y) + "\n");
 		}
 	}
 	else // Display message if coordinates out of range
@@ -392,37 +399,41 @@ void launchMissile()
 	system("pause");
 }
 
+/// <summary>
+/// Moves the missile in a loop until it hits the target
+/// </summary>
 void updateLaunchedMissile()
 {
-	while (missile.armed)
+	while (missile.armed) // Keeps looping until the missile explodes
 	{
-		system("cls");
-		missile.update();
-		drawMap();
-		Sleep(200);
+		system("cls"); // Clears the screen
+		missile.update(); // Updates the missile position
+		drawMap(); // Draws the map with ASCII
+		Sleep(200); // Quick delay
 
-		for (int i = 0; i < NUM_ENEMIES; i++)
+		for (int i = 0; i < NUM_ENEMIES; i++) // Loops through all the enemies
 		{
+			// Checks if there is an alive enemy at the current missile location
 			if (missile.coordinates == enemies[i].coordinates
 				&& enemies[i].active)
 			{
-				enemies[i].active = false;
-				enemiesAlive--;
-				typewrite("Target hit " + enemies[i].coordinates.getString() + "\n");
+				enemies[i].active = false; // Sets the enemy to inactive
+				enemiesAlive--; // Removes one enemy from enemy count
+				typewrite("Target hit " + enemies[i].coordinates.getString() + "\n"); // Types that a target was hit
 
-				if (missile.payload == WarHead::Nuclear)
+				if (missile.payload == WarHead::Nuclear) // Checks if the missile is nuclear
 				{
-					checkBlastRadius();
-					numNukes--;
-					if (numNukes == 0)
+					checkBlastRadius(); // Checks the blast radius and destroy enemies within
+					numNukes--; // Removes one from available nukes
+					if (numNukes == 0) // Checks if there are no nukes left
 					{
-						missile.payload = WarHead::Explosive;
-						typewrite("No more nuclear missiles available. Switched to Explosive missiles.\n");
+						missile.payload = WarHead::Explosive; // Switches to explosive missiles
+						typewrite("No more nuclear missiles available. Switched to Explosive missiles.\n"); // Types no more nuclear missiles available
 					}
 				}
 
-				missile.disarm();
-				break;
+				missile.disarm(); // Disarms the missile once it has exploded
+				break; // Break from the enemy loop
 			}
 		}
 
@@ -430,7 +441,7 @@ void updateLaunchedMissile()
 		if (missile.coordinates.x < 0 || missile.coordinates.x >= MAP_SIZE
 			|| missile.coordinates.y < 0 || missile.coordinates.y >= MAP_SIZE)
 		{
-			missile.disarm();
+			missile.disarm(); // Disarms the missile
 		}
 	}
 }
@@ -476,6 +487,7 @@ void checkBlastRadius()
 
 void enemyAttack()
 {
+	system("cls");
 	typewrite("\nScanning for enemy action");
 	dotDelay(400);
 	std::cout << "\n";
