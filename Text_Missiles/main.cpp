@@ -3,6 +3,8 @@
 /// Approx Time Taken: 15h
 
 #include <iostream>
+#include <ios>
+#include <limits>
 #include <time.h>
 #include <Windows.h>
 #include "string"
@@ -304,6 +306,15 @@ void chooseWarHead()
 
 	std::cin >> missileType; // Take input
 
+	if (std::cin.fail())
+	{
+		std::cin.clear();
+		std::cin.ignore(30, '\n');
+		typewrite("Unrecognised value entered, default missile selected: Explosive\n"); // Types that the input is an unknown value
+		missile.payload = WarHead::Explosive; // Selects the explosive type missile
+		dotDelay(400); // Delay with dot display
+	}
+
 	// Switches on input to set missile type
 	switch (missileType)
 	{
@@ -345,6 +356,14 @@ void launchMissile()
 	// Get input
 	typewrite("Enter coordinates (x and y separated by a space): ");
 	std::cin >> targetCoords.x >> targetCoords.y;
+
+	if (std::cin.fail())
+	{
+		std::cin.clear();
+		std::cin.ignore(30, '\n');
+		typewrite("ERROR: Unrecognised value entered"); // Types that the input is an unknown value
+		dotDelay(400); // Delay with dot display
+	}
 	
 	// Check coordinates are within range
 	if (targetCoords.x < 20 && targetCoords.y < 20 && targetCoords.x >= 0 && targetCoords.y >= 0)
@@ -362,6 +381,14 @@ void launchMissile()
 				// Get launch code input
 				typewrite("Enter launch code: ");
 				std::cin >> launchCode;
+
+				if (std::cin.fail())
+				{
+					std::cin.clear();
+					std::cin.ignore(30, '\n');
+					typewrite("ERROR: Unrecognised value entered"); // Types that the input is an unknown value
+					dotDelay(400); // Delay with dot display
+				}
 
 				// Check if the launch code is correct
 				if (LAUNCH_CODE == launchCode)
@@ -488,7 +515,7 @@ void checkBlastRadius()
 void enemyAttack()
 {
 	system("cls");
-	typewrite("\nScanning for enemy action");
+	typewrite("Scanning for enemy action");
 	dotDelay(400);
 	std::cout << "\n";
 
