@@ -525,7 +525,7 @@ void enemyAttack()
 	dotDelay(400);
 	std::cout << "\n";
 
-	if (enemiesAlive <= 0)
+	if (enemiesAlive <= 0) // If no enemies alive, win
 	{
 		typewrite("No enemies alive\n");
 		SetConsoleTextAttribute(hConsole, 14);
@@ -533,21 +533,23 @@ void enemyAttack()
 		SetConsoleTextAttribute(hConsole, 15);
 		player.command = 0;
 	}
-	else
+	else // If enemies are alive
 	{
-		for (int i = 0; i < NUM_ENEMIES; i++)
+		for (int i = 0; i < NUM_ENEMIES; i++) // Loop all the enemies
 		{
 			if (enemies[i].active)
 			{
 				typewrite("\nMissile Fired!\n");
 
-				if (rand() % NUM_ENEMIES == 0)
+				if (rand() % NUM_ENEMIES == 0) // Random number check to fire
 				{
 					player.health--;
-					if (player.health < 0)
+					if (player.health < 0) // If the player health goes below 0, set it back to 0
 					{
 						player.health = 0;
 					}
+
+					// Display that the ship was hit
 					SetConsoleTextAttribute(hConsole, 4);
 					typewrite("Ship hit!\n");
 					SetConsoleTextAttribute(hConsole, 15);
