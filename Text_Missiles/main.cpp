@@ -473,6 +473,9 @@ void updateLaunchedMissile()
 	}
 }
 
+/// <summary>
+/// Check if any enemies are in the nuclear missile blast radius
+/// </summary>
 void checkBlastRadius()
 {
 	for (int i = 0; i < NUM_ENEMIES; i++)
@@ -512,6 +515,9 @@ void checkBlastRadius()
 	}
 }
 
+/// <summary>
+/// Check if any enemy missiles hit the ship
+/// </summary>
 void enemyAttack()
 {
 	system("cls");
@@ -558,6 +564,10 @@ void enemyAttack()
 	system("pause");
 }
 
+/// <summary>
+/// Type out text to the screen
+/// </summary>
+/// <param name="t_string"></param>
 void typewrite(std::string t_string)
 {
 	int len = t_string.length();
@@ -568,6 +578,10 @@ void typewrite(std::string t_string)
 	}
 }
 
+/// <summary>
+/// Add a delay with dots printed
+/// </summary>
+/// <param name="t_delay"></param>
 void dotDelay(int t_delay)
 {
 	for (int i = 0; i < 3; i++)
@@ -578,28 +592,31 @@ void dotDelay(int t_delay)
 	Sleep(t_delay);
 }
 
+/// <summary>
+/// Draw the map in ASCII values
+/// </summary>
 void drawMap()
 {
 	bool drawnEnemy = false;
 	Coordinates cellCoords;
 
-	for (int row = 0; row < MAP_SIZE; row++)
+	for (int row = 0; row < MAP_SIZE; row++) // Loop for every row
 	{
-		for (int col = 0; col < MAP_SIZE; col++)
+		for (int col = 0; col < MAP_SIZE; col++) // Loop for every col
 		{
 			cellCoords.x = col;
 			cellCoords.y = row;
 
-			if (missile.coordinates == cellCoords && missile.armed)
+			if (missile.coordinates == cellCoords && missile.armed) // Check if the missile is in the currently drawing cell and the missile is armed
 			{
 				SetConsoleTextAttribute(hConsole, 10);
 				std::cout << "<->";
 			}
 			else
 			{
-				for (int enemyIndex = 0; enemyIndex < NUM_ENEMIES; enemyIndex++)
+				for (int enemyIndex = 0; enemyIndex < NUM_ENEMIES; enemyIndex++) // Loop for all the enemies
 				{
-					if (enemies[enemyIndex].active && enemies[enemyIndex].coordinates == cellCoords)
+					if (enemies[enemyIndex].active && enemies[enemyIndex].coordinates == cellCoords) // Check if the current enemy is active and the coordinates match the current cell
 					{
 
 						SetConsoleTextAttribute(hConsole, 12);
@@ -609,14 +626,14 @@ void drawMap()
 					}
 				}
 
-				if (!drawnEnemy)
+				if (!drawnEnemy) // If an enemy or missile hasn't drawn
 				{
-					if (player.coordinates == cellCoords)
+					if (player.coordinates == cellCoords) // Draw the player
 					{
 						SetConsoleTextAttribute(hConsole, 10);
 						std::cout << "=+=";
 					}
-					else
+					else // Draw the sea
 					{
 						SetConsoleTextAttribute(hConsole, 9);
 						std::cout << "~~~";
